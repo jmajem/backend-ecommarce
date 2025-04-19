@@ -1,0 +1,28 @@
+model Manager {
+  id          String      @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String      @unique
+  password    String
+  phoneNumber String
+  role        Role        @default(MANAGER)
+  isActive    Boolean     @default(true)
+  lastLogin   DateTime?
+  permissions Permission[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum Role {
+  MANAGER
+  ADMIN
+}
+
+enum Permission {
+  MANAGE_USERS
+  MANAGE_PRODUCTS
+  MANAGE_ORDERS
+  MANAGE_CATEGORIES
+  MANAGE_SELLERS
+  VIEW_REPORTS
+} 

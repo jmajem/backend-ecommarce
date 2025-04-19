@@ -1,6 +1,6 @@
 const { EntitySchema } = require("typeorm");
 
-const User = new EntitySchema({
+module.exports = new EntitySchema({
   name: "User",
   tableName: "users",
   columns: {
@@ -9,79 +9,68 @@ const User = new EntitySchema({
       type: "bigint",
       generated: true,
     },
-    username: {
+    firstName: {
       type: "varchar",
       nullable: false,
-      unique: true,
+    },
+    lastName: {
+      type: "varchar",
+      nullable: false,
     },
     email: {
       type: "varchar",
-      nullable: false,
       unique: true,
+      nullable: false,
     },
     password: {
       type: "varchar",
       nullable: false,
     },
-    firstName: {
-      type: "varchar",
-      name: "first_name",
-      nullable: true,
-    },
-    lastName: {
-      type: "varchar",
-      name: "last_name",
-      nullable: true,
-    },
     phoneNumber: {
       type: "varchar",
-      name: "phone_number",
-      nullable: true,
+      nullable: false,
     },
     role: {
-      type: "varchar",
-      nullable: false,
-      default: "user",
+      type: "enum",
+      enum: ["USER", "SELLER", "MANAGER", "ADMIN"],
+      default: "USER",
     },
-    status: {
-      type: "varchar",
-      nullable: false,
-      default: "active",
+    isActive: {
+      type: "boolean",
+      default: true,
     },
     createdAt: {
       type: "timestamp",
-      name: "created_at",
       default: () => "CURRENT_TIMESTAMP",
     },
     updatedAt: {
       type: "timestamp",
-      name: "updated_at",
       default: () => "CURRENT_TIMESTAMP",
       onUpdate: "CURRENT_TIMESTAMP",
     },
   },
   relations: {
-    carts: {
-      type: "one-to-many",
-      target: "Cart",
-      inverseSide: "user",
-    },
-    orders: {
-      type: "one-to-many",
-      target: "Order",
-      inverseSide: "user",
-    },
     reviews: {
       type: "one-to-many",
       target: "Review",
       inverseSide: "user",
     },
+
+    cart: {
+      type: "one-to-one",
+      target: "Cart",
+      inverseSide: "user",
+    },
+
     seller: {
-      type: "one-to-many",
+      type: "one-to-one",
       target: "Seller",
+      inverseSide: "user",
+    },
+    manager: {
+      type: "one-to-one",
+      target: "Manager",
       inverseSide: "user",
     },
   },
 });
-
-module.exports = User;

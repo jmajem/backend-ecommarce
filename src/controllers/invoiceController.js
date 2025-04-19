@@ -4,7 +4,7 @@ const AppError = require("../utils/AppError");
 
 /**
  * @swagger
- * /api/v1/invoices:
+ * /api/invoices:
  *   post:
  *     summary: Create a new invoice
  *     tags: [Invoices]
@@ -15,35 +15,16 @@ const AppError = require("../utils/AppError");
  *           schema:
  *             type: object
  *             required:
- *               - invoiceSales
- *               - invoiceDate
- *               - invoiceTotalPrice
- *               - invoiceOrderNumber
- *               - invoicePaymentType
- *               - invoicePaymentStatus
+ *               - cartId
  *               - sellerId
- *               - userId
- *               - orderId
+ *               - paymentMethod
  *             properties:
- *               invoiceSales:
- *                 type: string
- *               invoiceDate:
- *                 type: string
- *               invoiceTotalPrice:
- *                 type: number
- *                 format: decimal
- *               invoiceOrderNumber:
- *                 type: string
- *               invoicePaymentType:
- *                 type: string
- *               invoicePaymentStatus:
- *                 type: string
+ *               cartId:
+ *                 type: integer
  *               sellerId:
  *                 type: integer
- *               userId:
- *                 type: integer
- *               orderId:
- *                 type: integer
+ *               paymentMethod:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Invoice created successfully
@@ -52,36 +33,32 @@ exports.createInvoice = catchAsync(async (req, res, next) => {
   const invoice = await invoiceService.createInvoice(req.body);
   res.status(201).json({
     status: "success",
-    data: {
-      invoice,
-    },
+    data: invoice,
   });
 });
 
 /**
  * @swagger
- * /api/v1/invoices:
+ * /api/invoices:
  *   get:
  *     summary: Get all invoices
  *     tags: [Invoices]
  *     responses:
  *       200:
- *         description: List of invoices
+ *         description: List of all invoices
  */
 exports.getAllInvoices = catchAsync(async (req, res, next) => {
   const invoices = await invoiceService.getAllInvoices();
   res.status(200).json({
     status: "success",
     results: invoices.length,
-    data: {
-      invoices,
-    },
+    data: invoices,
   });
 });
 
 /**
  * @swagger
- * /api/v1/invoices/{id}:
+ * /api/invoices/{id}:
  *   get:
  *     summary: Get an invoice by ID
  *     tags: [Invoices]
@@ -90,7 +67,7 @@ exports.getAllInvoices = catchAsync(async (req, res, next) => {
  *         name: id
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
  *     responses:
  *       200:
  *         description: Invoice details
@@ -98,18 +75,16 @@ exports.getAllInvoices = catchAsync(async (req, res, next) => {
  *         description: Invoice not found
  */
 exports.getInvoice = catchAsync(async (req, res, next) => {
-  const invoice = await invoiceService.getInvoiceById(req.params.id);
+  const invoice = await invoiceService.getInvoice(req.params.id);
   res.status(200).json({
     status: "success",
-    data: {
-      invoice,
-    },
+    data: invoice,
   });
 });
 
 /**
  * @swagger
- * /api/v1/invoices/user/{userId}:
+ * /api/invoices/user/{userId}:
  *   get:
  *     summary: Get invoices by user ID
  *     tags: [Invoices]
@@ -118,7 +93,7 @@ exports.getInvoice = catchAsync(async (req, res, next) => {
  *         name: userId
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
  *     responses:
  *       200:
  *         description: List of user's invoices
@@ -128,15 +103,13 @@ exports.getInvoicesByUser = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     results: invoices.length,
-    data: {
-      invoices,
-    },
+    data: invoices,
   });
 });
 
 /**
  * @swagger
- * /api/v1/invoices/seller/{sellerId}:
+ * /api/invoices/seller/{sellerId}:
  *   get:
  *     summary: Get invoices by seller ID
  *     tags: [Invoices]
@@ -145,7 +118,7 @@ exports.getInvoicesByUser = catchAsync(async (req, res, next) => {
  *         name: sellerId
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
  *     responses:
  *       200:
  *         description: List of seller's invoices
@@ -157,42 +130,39 @@ exports.getInvoicesBySeller = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     results: invoices.length,
-    data: {
-      invoices,
-    },
+    data: invoices,
   });
 });
 
 /**
  * @swagger
- * /api/v1/invoices/order/{orderId}:
+ * /api/invoices/cart/{cartId}:
  *   get:
- *     summary: Get invoices by order ID
+ *     summary: Get invoice by cart ID
  *     tags: [Invoices]
  *     parameters:
  *       - in: path
- *         name: orderId
+ *         name: cartId
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
  *     responses:
  *       200:
- *         description: List of order's invoices
+ *         description: Invoice details
+ *       404:
+ *         description: Invoice not found
  */
-exports.getInvoicesByOrder = catchAsync(async (req, res, next) => {
-  const invoices = await invoiceService.getInvoicesByOrder(req.params.orderId);
+exports.getInvoiceByCart = catchAsync(async (req, res, next) => {
+  const invoice = await invoiceService.getInvoiceByCart(req.params.cartId);
   res.status(200).json({
     status: "success",
-    results: invoices.length,
-    data: {
-      invoices,
-    },
+    data: invoice,
   });
 });
 
 /**
  * @swagger
- * /api/v1/invoices/{id}:
+ * /api/invoices/{id}:
  *   patch:
  *     summary: Update an invoice
  *     tags: [Invoices]
@@ -201,7 +171,7 @@ exports.getInvoicesByOrder = catchAsync(async (req, res, next) => {
  *         name: id
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
@@ -209,16 +179,7 @@ exports.getInvoicesByOrder = catchAsync(async (req, res, next) => {
  *           schema:
  *             type: object
  *             properties:
- *               invoiceSales:
- *                 type: string
- *               invoiceDate:
- *                 type: string
- *               invoiceTotalPrice:
- *                 type: number
- *                 format: decimal
- *               invoicePaymentType:
- *                 type: string
- *               invoicePaymentStatus:
+ *               paymentMethod:
  *                 type: string
  *     responses:
  *       200:
@@ -230,15 +191,13 @@ exports.updateInvoice = catchAsync(async (req, res, next) => {
   const invoice = await invoiceService.updateInvoice(req.params.id, req.body);
   res.status(200).json({
     status: "success",
-    data: {
-      invoice,
-    },
+    data: invoice,
   });
 });
 
 /**
  * @swagger
- * /api/v1/invoices/{id}:
+ * /api/invoices/{id}:
  *   delete:
  *     summary: Delete an invoice
  *     tags: [Invoices]
@@ -247,7 +206,7 @@ exports.updateInvoice = catchAsync(async (req, res, next) => {
  *         name: id
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
  *     responses:
  *       204:
  *         description: Invoice deleted successfully
@@ -264,7 +223,7 @@ exports.deleteInvoice = catchAsync(async (req, res, next) => {
 
 /**
  * @swagger
- * /api/v1/invoices/{id}/payment-status:
+ * /api/invoices/{id}/status:
  *   patch:
  *     summary: Update invoice payment status
  *     tags: [Invoices]
@@ -273,7 +232,7 @@ exports.deleteInvoice = catchAsync(async (req, res, next) => {
  *         name: id
  *         required: true
  *         schema:
- *           type: string
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
@@ -285,21 +244,20 @@ exports.deleteInvoice = catchAsync(async (req, res, next) => {
  *             properties:
  *               status:
  *                 type: string
+ *                 enum: [PENDING, PAID, FAILED, REFUNDED]
  *     responses:
  *       200:
- *         description: Invoice payment status updated successfully
+ *         description: Payment status updated successfully
  *       404:
  *         description: Invoice not found
  */
-exports.updateInvoicePaymentStatus = catchAsync(async (req, res, next) => {
-  const invoice = await invoiceService.updateInvoicePaymentStatus(
+exports.updatePaymentStatus = catchAsync(async (req, res, next) => {
+  const invoice = await invoiceService.updatePaymentStatus(
     req.params.id,
     req.body.status
   );
   res.status(200).json({
     status: "success",
-    data: {
-      invoice,
-    },
+    data: invoice,
   });
 });

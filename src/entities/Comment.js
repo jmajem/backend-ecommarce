@@ -1,17 +1,25 @@
 const { EntitySchema } = require("typeorm");
 
-const CartItem = new EntitySchema({
-  name: "CartItem",
-  tableName: "cart_items",
+const Comment = new EntitySchema({
+  name: "Comment",
+  tableName: "comments",
   columns: {
     id: {
       primary: true,
       type: "bigint",
       generated: true,
     },
-    cartId: {
+    rating: {
+      type: "int",
+      nullable: false,
+    },
+    content: {
+      type: "text",
+      nullable: true,
+    },
+    userId: {
       type: "bigint",
-      name: "cart_id",
+      name: "user_id",
       nullable: false,
     },
     productId: {
@@ -19,16 +27,10 @@ const CartItem = new EntitySchema({
       name: "product_id",
       nullable: false,
     },
-    quantity: {
-      type: "int",
+    status: {
+      type: "varchar",
       nullable: false,
-      default: 1,
-    },
-    price: {
-      type: "decimal",
-      precision: 10,
-      scale: 2,
-      nullable: false,
+      default: "active",
     },
     createdAt: {
       type: "timestamp",
@@ -43,11 +45,11 @@ const CartItem = new EntitySchema({
     },
   },
   relations: {
-    cart: {
+    user: {
       type: "many-to-one",
-      target: "Cart",
+      target: "User",
       joinColumn: {
-        name: "cart_id",
+        name: "user_id",
         referencedColumnName: "id",
       },
     },
@@ -59,6 +61,12 @@ const CartItem = new EntitySchema({
         referencedColumnName: "id",
       },
     },
+    replies: {
+      type: "one-to-many",
+      target: "CommentReply",
+      inverseSide: "comment",
+    },
   },
 });
-module.exports = CartItem;
+
+module.exports = Comment;

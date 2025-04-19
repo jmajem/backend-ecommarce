@@ -1,8 +1,8 @@
 const { EntitySchema } = require("typeorm");
 
-module.exports = new EntitySchema({
-  name: "Review",
-  tableName: "reviews",
+const Manager = new EntitySchema({
+  name: "Manager",
+  tableName: "managers",
   columns: {
     id: {
       primary: true,
@@ -11,26 +11,18 @@ module.exports = new EntitySchema({
     },
     userId: {
       type: "bigint",
+      name: "user_id",
       nullable: false,
     },
-    productId: {
-      type: "bigint",
-      nullable: false,
-    },
-    rating: {
-      type: "int",
-      nullable: false,
-    },
-    comment: {
-      type: "text",
-      nullable: true,
-    },
+
     createdAt: {
       type: "timestamp",
+      name: "created_at",
       default: () => "CURRENT_TIMESTAMP",
     },
     updatedAt: {
       type: "timestamp",
+      name: "updated_at",
       default: () => "CURRENT_TIMESTAMP",
       onUpdate: "CURRENT_TIMESTAMP",
     },
@@ -40,17 +32,11 @@ module.exports = new EntitySchema({
       type: "many-to-one",
       target: "User",
       joinColumn: {
-        name: "userId",
-        referencedColumnName: "id",
-      },
-    },
-    product: {
-      type: "many-to-one",
-      target: "Product",
-      joinColumn: {
-        name: "productId",
+        name: "user_id",
         referencedColumnName: "id",
       },
     },
   },
 });
+
+module.exports = Manager;

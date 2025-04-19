@@ -1,8 +1,8 @@
 const { EntitySchema } = require("typeorm");
 
-const ReviewReply = new EntitySchema({
-  name: "ReviewReply",
-  tableName: "review_replies",
+const CommentReply = new EntitySchema({
+  name: "CommentReply",
+  tableName: "comment_replies",
   columns: {
     id: {
       primary: true,
@@ -13,9 +13,9 @@ const ReviewReply = new EntitySchema({
       type: "text",
       nullable: false,
     },
-    reviewId: {
+    commentId: {
       type: "bigint",
-      name: "review_id",
+      name: "comment_id",
       nullable: false,
     },
     userId: {
@@ -41,11 +41,11 @@ const ReviewReply = new EntitySchema({
     },
   },
   relations: {
-    review: {
+    comment: {
       type: "many-to-one",
-      target: "Review",
+      target: "Comment",
       joinColumn: {
-        name: "review_id",
+        name: "comment_id",
         referencedColumnName: "id",
       },
     },
@@ -60,4 +60,4 @@ const ReviewReply = new EntitySchema({
   },
 });
 
-module.exports = ReviewReply;
+module.exports = CommentReply;
