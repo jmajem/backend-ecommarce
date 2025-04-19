@@ -32,6 +32,11 @@ const Store = new EntitySchema({
       target: "Product",
       inverseSide: "store",
     },
+    sellers: {
+      type: "one-to-many",
+      target: "Seller",
+      inverseSide: "store",
+    },
   },
 });
 

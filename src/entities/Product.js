@@ -77,6 +77,11 @@ const Product = new EntitySchema({
         },
       },
     },
+    reviews: {
+      type: "one-to-many",
+      target: "Review",
+      inverseSide: "product",
+    },
   },
 });
 
