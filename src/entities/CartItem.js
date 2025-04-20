@@ -1,8 +1,8 @@
 const { EntitySchema } = require("typeorm");
 
-const CartItem = new EntitySchema({
+module.exports = new EntitySchema({
   name: "CartItem",
-  tableName: "cart_items",
+  tableName: "CartItem",
   columns: {
     id: {
       primary: true,
@@ -11,12 +11,10 @@ const CartItem = new EntitySchema({
     },
     cartId: {
       type: "bigint",
-      name: "cart_id",
       nullable: false,
     },
     productId: {
       type: "bigint",
-      name: "product_id",
       nullable: false,
     },
     quantity: {
@@ -32,12 +30,10 @@ const CartItem = new EntitySchema({
     },
     createdAt: {
       type: "timestamp",
-      name: "created_at",
       default: () => "CURRENT_TIMESTAMP",
     },
     updatedAt: {
       type: "timestamp",
-      name: "updated_at",
       default: () => "CURRENT_TIMESTAMP",
       onUpdate: "CURRENT_TIMESTAMP",
     },
@@ -46,8 +42,9 @@ const CartItem = new EntitySchema({
     cart: {
       type: "many-to-one",
       target: "Cart",
+      inverseSide: "items",
       joinColumn: {
-        name: "cart_id",
+        name: "cartId",
         referencedColumnName: "id",
       },
     },
@@ -55,10 +52,9 @@ const CartItem = new EntitySchema({
       type: "many-to-one",
       target: "Product",
       joinColumn: {
-        name: "product_id",
+        name: "productId",
         referencedColumnName: "id",
       },
     },
   },
 });
-module.exports = CartItem;

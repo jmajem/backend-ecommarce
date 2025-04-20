@@ -1,8 +1,8 @@
 const { EntitySchema } = require("typeorm");
 
-const Seller = new EntitySchema({
+module.exports = new EntitySchema({
   name: "Seller",
-  tableName: "seller",
+  tableName: "Seller",
   columns: {
     id: {
       primary: true,
@@ -11,27 +11,22 @@ const Seller = new EntitySchema({
     },
     userId: {
       type: "bigint",
-      name: "user_id",
       nullable: false,
     },
     storeId: {
       type: "bigint",
-      name: "store_id",
       nullable: false,
     },
-    status: {
-      type: "varchar",
-      nullable: false,
-      default: "active",
+    isActive: {
+      type: "boolean",
+      default: true,
     },
     createdAt: {
       type: "timestamp",
-      name: "created_at",
       default: () => "CURRENT_TIMESTAMP",
     },
     updatedAt: {
       type: "timestamp",
-      name: "updated_at",
       default: () => "CURRENT_TIMESTAMP",
       onUpdate: "CURRENT_TIMESTAMP",
     },
@@ -40,20 +35,20 @@ const Seller = new EntitySchema({
     user: {
       type: "many-to-one",
       target: "User",
+      inverseSide: "seller",
       joinColumn: {
-        name: "user_id",
+        name: "userId",
         referencedColumnName: "id",
       },
     },
     store: {
       type: "many-to-one",
       target: "Store",
+      inverseSide: "seller",
       joinColumn: {
-        name: "store_id",
+        name: "storeId",
         referencedColumnName: "id",
       },
     },
   },
 });
-
-module.exports = Seller;

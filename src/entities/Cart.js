@@ -2,7 +2,7 @@ const { EntitySchema } = require("typeorm");
 
 module.exports = new EntitySchema({
   name: "Cart",
-  tableName: "carts",
+  tableName: "Cart",
   columns: {
     id: {
       primary: true,
@@ -12,7 +12,6 @@ module.exports = new EntitySchema({
     userId: {
       type: "bigint",
       nullable: false,
-      unique: true,
     },
     total: {
       type: "decimal",
@@ -32,8 +31,9 @@ module.exports = new EntitySchema({
   },
   relations: {
     user: {
-      type: "one-to-one",
+      type: "many-to-one",
       target: "User",
+      inverseSide: "cart",
       joinColumn: {
         name: "userId",
         referencedColumnName: "id",

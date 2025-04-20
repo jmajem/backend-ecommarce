@@ -75,7 +75,10 @@ exports.getAllInvoices = catchAsync(async (req, res, next) => {
  *         description: Invoice not found
  */
 exports.getInvoice = catchAsync(async (req, res, next) => {
-  const invoice = await invoiceService.getInvoice(req.params.id);
+  const invoice = await invoiceService.getInvoiceById(req.params.id);
+  if (!invoice) {
+    return next(new AppError("No invoice found with that ID", 404));
+  }
   res.status(200).json({
     status: "success",
     data: invoice,
@@ -181,6 +184,8 @@ exports.getInvoiceByCart = catchAsync(async (req, res, next) => {
  *             properties:
  *               paymentMethod:
  *                 type: string
+ *               status:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Invoice updated successfully
@@ -189,6 +194,9 @@ exports.getInvoiceByCart = catchAsync(async (req, res, next) => {
  */
 exports.updateInvoice = catchAsync(async (req, res, next) => {
   const invoice = await invoiceService.updateInvoice(req.params.id, req.body);
+  if (!invoice) {
+    return next(new AppError("No invoice found with that ID", 404));
+  }
   res.status(200).json({
     status: "success",
     data: invoice,
@@ -214,7 +222,10 @@ exports.updateInvoice = catchAsync(async (req, res, next) => {
  *         description: Invoice not found
  */
 exports.deleteInvoice = catchAsync(async (req, res, next) => {
-  await invoiceService.deleteInvoice(req.params.id);
+  const invoice = await invoiceService.deleteInvoice(req.params.id);
+  if (!invoice) {
+    return next(new AppError("No invoice found with that ID", 404));
+  }
   res.status(204).json({
     status: "success",
     data: null,
@@ -223,7 +234,32 @@ exports.deleteInvoice = catchAsync(async (req, res, next) => {
 
 /**
  * @swagger
- * /api/invoices/{id}/status:
+ * /api/invoices/order/{orderId}:
+ *   get:
+ *     summary: Get invoices by order ID
+ *     tags: [Invoices]
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of order's invoices
+ */
+exports.getInvoicesByOrder = catchAsync(async (req, res, next) => {
+  const invoices = await invoiceService.getInvoicesByOrder(req.params.orderId);
+  res.status(200).json({
+    status: "success",
+    results: invoices.length,
+    data: invoices,
+  });
+});
+
+/**
+ * @swagger
+ * /api/invoices/{id}/payment-status:
  *   patch:
  *     summary: Update invoice payment status
  *     tags: [Invoices]
@@ -244,18 +280,21 @@ exports.deleteInvoice = catchAsync(async (req, res, next) => {
  *             properties:
  *               status:
  *                 type: string
- *                 enum: [PENDING, PAID, FAILED, REFUNDED]
+ *                 enum: [pending, paid, failed]
  *     responses:
  *       200:
  *         description: Payment status updated successfully
  *       404:
  *         description: Invoice not found
  */
-exports.updatePaymentStatus = catchAsync(async (req, res, next) => {
-  const invoice = await invoiceService.updatePaymentStatus(
+exports.updateInvoicePaymentStatus = catchAsync(async (req, res, next) => {
+  const invoice = await invoiceService.updateInvoicePaymentStatus(
     req.params.id,
     req.body.status
   );
+  if (!invoice) {
+    return next(new AppError("No invoice found with that ID", 404));
+  }
   res.status(200).json({
     status: "success",
     data: invoice,

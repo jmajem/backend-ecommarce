@@ -1,19 +1,24 @@
-const { createConnection } = require("typeorm");
-const typeormConfig = require("./typeorm.config");
+const { DataSource } = require("typeorm");
+const entities = require("../entities");
+const dotenv = require("dotenv");
 
-let connection;
+dotenv.config();
 
-const connectDatabase = async () => {
-  try {
-    if (!connection) {
-      connection = await createConnection(typeormConfig);
-      console.log("Database connected successfully");
-    }
-    return connection;
-  } catch (error) {
-    console.error("Error connecting to the database:", error);
-    process.exit(1);
-  }
-};
+const AppDataSource = new DataSource({
+  type: "postgres",
+  host: process.env.DB_HOST || "localhost",
+  port: parseInt(process.env.DB_PORT) || 5432,
+  username: process.env.DB_USERNAME || "postgres",
+  password: process.env.DB_PASSWORD || "postgres",
+  database: process.env.DB_NAME || "ecommerce",
+  synchronize: process.env.NODE_ENV !== "production",
+  logging: process.env.NODE_ENV !== "production",
+  entities: Object.values(entities),
+  migrations: [],
+  subscribers: [],
+  migrationsRun: false,
+  dropSchema: false,
+  skipSchemaCheck: true,
+});
 
-module.exports = connectDatabase;
+module.exports = { AppDataSource };

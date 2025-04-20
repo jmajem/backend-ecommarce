@@ -50,18 +50,16 @@ module.exports = new EntitySchema({
     },
   },
   relations: {
-    reviews: {
+    comments: {
       type: "one-to-many",
-      target: "Review",
+      target: "Comment",
       inverseSide: "user",
     },
-
     cart: {
       type: "one-to-one",
       target: "Cart",
       inverseSide: "user",
     },
-
     seller: {
       type: "one-to-one",
       target: "Seller",

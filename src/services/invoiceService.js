@@ -1,49 +1,35 @@
 const { AppDataSource } = require("../config/database");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
+const { Invoice } = require("../entities");
 
-const invoiceRepository = AppDataSource.getRepository("Invoice");
+const invoiceRepository = AppDataSource.getRepository(Invoice);
 const cartRepository = AppDataSource.getRepository("Cart");
 
 // Create a new invoice
 exports.createInvoice = catchAsync(async (invoiceData) => {
-  const cart = await cartRepository.findOne({
-    where: { id: invoiceData.cartId },
-    relations: ["user", "items"],
-  });
-
-  if (!cart) {
-    throw new AppError("No cart found with that ID", 404);
-  }
-
-  const invoice = invoiceRepository.create({
-    ...invoiceData,
-    userId: cart.user.id,
-    amount: cart.total,
-  });
-
-  await invoiceRepository.save(invoice);
-  return invoice;
+  const invoice = invoiceRepository.create(invoiceData);
+  return await invoiceRepository.save(invoice);
 });
 
 // Get all invoices
 exports.getAllInvoices = catchAsync(async () => {
-  const invoices = await invoiceRepository.find({
-    relations: ["cart", "user", "seller"],
+  return await invoiceRepository.find({
+    relations: ["user", "seller", "order"],
   });
-  return invoices;
 });
 
 // Get invoice by ID
-exports.getInvoice = catchAsync(async (id) => {
+exports.getInvoiceById = catchAsync(async (id) => {
   const invoice = await invoiceRepository.findOne({
     where: { id },
-    relations: ["cart", "user", "seller"],
+    relations: ["user", "seller", "order"],
   });
 
   if (!invoice) {
     throw new AppError("No invoice found with that ID", 404);
   }
+
   return invoice;
 });
 
@@ -51,7 +37,6 @@ exports.getInvoice = catchAsync(async (id) => {
 exports.updateInvoice = catchAsync(async (id, updateData) => {
   const invoice = await invoiceRepository.findOne({
     where: { id },
-    relations: ["cart", "user", "seller"],
   });
 
   if (!invoice) {
@@ -59,16 +44,21 @@ exports.updateInvoice = catchAsync(async (id, updateData) => {
   }
 
   Object.assign(invoice, updateData);
-  await invoiceRepository.save(invoice);
-  return invoice;
+  return await invoiceRepository.save(invoice);
 });
 
 // Delete invoice
 exports.deleteInvoice = catchAsync(async (id) => {
-  const result = await invoiceRepository.delete(id);
-  if (result.affected === 0) {
+  const invoice = await invoiceRepository.findOne({
+    where: { id },
+  });
+
+  if (!invoice) {
     throw new AppError("No invoice found with that ID", 404);
   }
+
+  await invoiceRepository.remove(invoice);
+  return invoice;
 });
 
 // Get invoices by user ID

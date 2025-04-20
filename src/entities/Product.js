@@ -1,6 +1,6 @@
 const { EntitySchema } = require("typeorm");
 
-const Product = new EntitySchema({
+module.exports = new EntitySchema({
   name: "Product",
   tableName: "Product",
   columns: {
@@ -77,12 +77,10 @@ const Product = new EntitySchema({
         },
       },
     },
-    reviews: {
+    comments: {
       type: "one-to-many",
-      target: "Review",
+      target: "Comment",
       inverseSide: "product",
     },
   },
 });
-
-module.exports = Product;

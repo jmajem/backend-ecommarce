@@ -1,6 +1,6 @@
 const { EntitySchema } = require("typeorm");
 
-const Comment = new EntitySchema({
+module.exports = new EntitySchema({
   name: "Comment",
   tableName: "comments",
   columns: {
@@ -9,37 +9,28 @@ const Comment = new EntitySchema({
       type: "bigint",
       generated: true,
     },
+    content: {
+      type: "text",
+      nullable: false,
+    },
     rating: {
       type: "int",
       nullable: false,
     },
-    content: {
-      type: "text",
-      nullable: true,
-    },
     userId: {
       type: "bigint",
-      name: "user_id",
       nullable: false,
     },
     productId: {
       type: "bigint",
-      name: "product_id",
       nullable: false,
-    },
-    status: {
-      type: "varchar",
-      nullable: false,
-      default: "active",
     },
     createdAt: {
       type: "timestamp",
-      name: "created_at",
       default: () => "CURRENT_TIMESTAMP",
     },
     updatedAt: {
       type: "timestamp",
-      name: "updated_at",
       default: () => "CURRENT_TIMESTAMP",
       onUpdate: "CURRENT_TIMESTAMP",
     },
@@ -48,25 +39,20 @@ const Comment = new EntitySchema({
     user: {
       type: "many-to-one",
       target: "User",
+      inverseSide: "comments",
       joinColumn: {
-        name: "user_id",
+        name: "userId",
         referencedColumnName: "id",
       },
     },
     product: {
       type: "many-to-one",
       target: "Product",
+      inverseSide: "comments",
       joinColumn: {
-        name: "product_id",
+        name: "productId",
         referencedColumnName: "id",
       },
     },
-    replies: {
-      type: "one-to-many",
-      target: "CommentReply",
-      inverseSide: "comment",
-    },
   },
 });
-
-module.exports = Comment;
